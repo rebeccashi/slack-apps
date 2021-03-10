@@ -81,15 +81,23 @@ app.event('app_home_opened', async ({ event, client, context }) => {
 
 // clicking the button is not triggering this function
 app.action("create_task", async ({ack, body, client}) => {
-  console.log('Creating an event')
   await ack();
   const {trigger_id} = body;
+  //  user: {
+  //   id: 'U01LFS3BN92',
+  //   username: 'xs938',
+  //   name: 'xs938',
+  //   team_id: 'T01L9T9TE0K'
+  // },
+  const user = body.user;
+
 
   try {
     await client.views.open({
       trigger_id: trigger_id,
       view: {
         type: 'modal',
+        callback_id: 'create_task_view',
         title: {
           type: 'plain_text',
           text: 'Create a Task'
@@ -102,7 +110,7 @@ app.action("create_task", async ({ack, body, client}) => {
           // Text input
           {
             "type": "input",
-            "block_id": "note01",
+            "block_id": "task_name",
             "label": {
               "type": "plain_text",
               "text": "Task"
@@ -173,7 +181,7 @@ app.action("create_task", async ({ack, body, client}) => {
                   "text": "Select a date",
                   "emoji": true
                 },
-                "action_id": "actionId-0"
+                "action_id": "select_date1"
               },
               {
                 "type": "datepicker",
@@ -183,7 +191,7 @@ app.action("create_task", async ({ack, body, client}) => {
                   "text": "Select a date",
                   "emoji": true
                 },
-                "action_id": "actionId-1"
+                "action_id": "select_date2"
               }
             ]
           },
@@ -198,20 +206,20 @@ app.action("create_task", async ({ack, body, client}) => {
                   "text": "Select time",
                   "emoji": true
                 },
-                "action_id": "select_time"
+                "action_id": "select_time1"
               },
               {
-                "type": "button",
-                "text": {
+                "type": "timepicker",
+                "initial_time": "13:37",
+                "placeholder": {
                   "type": "plain_text",
-                  "text": "Click Me",
+                  "text": "Select time",
                   "emoji": true
                 },
-                "value": "click_me_123",
-                "action_id": "select_date"
+                "action_id": "select_time2"
               }
             ]
-          }
+          },
         ]
       }
     })
@@ -221,7 +229,30 @@ app.action("create_task", async ({ack, body, client}) => {
   }
 })
 
-// const openModal = async (trigger_id) => {
-  
-//   const modal = 
-// }
+// send acks to buttons
+app.action('select_date1', async ({ ack}) => {
+  await ack();
+})
+
+app.action('select_date2', async ({ ack}) => {
+  await ack();
+})
+
+app.action('select_time1', async ({ ack}) => {
+  await ack();
+})
+
+app.action('select_time2', async ({ ack}) => {
+  await ack();
+})
+
+
+// listens for and processes view submission
+app.view('create_task_view', async ({ ack, body, client, view}) => {
+  await ack();
+  const values = view.state.values;
+  const user = body.user;
+  const id = user.id;
+  console.log(values)
+
+})
