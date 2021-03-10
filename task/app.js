@@ -39,14 +39,15 @@ app.event('app_home_opened', async ({ event, client, context }) => {
           {
             type: "divider"
           },
-          // {
-          //   "type": "section",
-          //   "text": {
-          //     "type": "mrkdwn",
-          //     //This button won't do much for now but you can set up a listener for it using the `actions()` method and passing its unique `action_id`. See an example in the `examples` folder within your Bolt app.
-          //     "text": "Create a new event"
-          //   }
-          // },
+          //sample task 
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              //This button won't do much for now but you can set up a listener for it using the `actions()` method and passing its unique `action_id`. See an example in the `examples` folder within your Bolt app.
+              "text": "Standup at 10am"
+            }
+          },
           {
             type: "actions",
             elements: [
@@ -63,13 +64,105 @@ app.event('app_home_opened', async ({ event, client, context }) => {
         ]
       }
     });
+    console.log(result)
   }
   catch (error) {
     console.error(error);
   }
 });
 
-app.action("create_event", async ({ack}) => {
-  await ack();
+// clicking the button is not triggering this function
+app.action("create_event", async ({ack, body}) => {
   console.log('Creating an event')
+  await ack();
+  const {trigger_id} = body;
+
+  try {
+    await client.views.open({
+      openModal(trigger_id)
+    })
+  } 
+  catch (error) {
+    console.log(error.message)
+  }
 })
+
+const openModal = async(trigger_id) => {
+  
+  const modal = {
+    type: 'modal',
+    title: {
+      type: 'plain_text',
+      text: 'Create a Task'
+    },
+    submit: {
+      type: 'plain_text',
+      text: 'Create'
+    },
+    blocks: [
+      // Text input
+      {
+        "type": "input",
+        "block_id": "note01",
+        "label": {
+          "type": "plain_text",
+          "text": "Note"
+        },
+        "element": {
+          "action_id": "content",
+          "type": "plain_text_input",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Take a note... \n(Text longer than 3000 characters will be truncated!)"
+          },
+          "multiline": true
+        }
+      },
+      
+      // Drop-down menu      
+      {
+        "type": "input",
+        "block_id": "note02",
+        "label": {
+          "type": "plain_text",
+          "text": "Color",
+        },
+        "element": {
+          "type": "static_select",
+          "action_id": "color",
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "yellow"
+              },
+              "value": "yellow"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "blue"
+              },
+              "value": "blue"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "green"
+              },
+              "value": "green"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "pink"
+              },
+              "value": "pink"
+            }
+          ]
+        }
+      
+      }
+    ]
+  }
+}
