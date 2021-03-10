@@ -49,7 +49,11 @@ app.event('app_home_opened', async ({ event, client, context }) => {
             }
           },
           {
+            type: "divider"
+          },
+          {
             type: "actions",
+            block_id: "create_block",
             elements: [
               {
                 type: "button",
@@ -57,14 +61,15 @@ app.event('app_home_opened', async ({ event, client, context }) => {
                   type: "plain_text",
                   text: "Create a New Event"
                 },
-                action_id: "create_event",
+                action_id: "create_task",
+                value: "create_event_button"
               }
+              
             ]
           }
         ]
       }
     });
-    console.log(result)
   }
   catch (error) {
     console.error(error);
@@ -72,14 +77,99 @@ app.event('app_home_opened', async ({ event, client, context }) => {
 });
 
 // clicking the button is not triggering this function
-app.action("create_event", async ({ack, body}) => {
+app.action("create_task", async ({ack, body, client}) => {
   console.log('Creating an event')
   await ack();
   const {trigger_id} = body;
 
   try {
     await client.views.open({
-      openModal(trigger_id)
+      trigger_id: trigger_id,
+      view: {
+        type: 'modal',
+        title: {
+          type: 'plain_text',
+          text: 'Create a Task'
+        },
+        submit: {
+          type: 'plain_text',
+          text: 'Create'
+        },
+        blocks: [
+          // Text input
+          {
+            "type": "input",
+            "block_id": "note01",
+            "label": {
+              "type": "plain_text",
+              "text": "Note"
+            },
+            "element": {
+              "action_id": "content",
+              "type": "plain_text_input",
+              "placeholder": {
+                "type": "plain_text",
+                "text": "Take a note... \n(Text longer than 3000 characters will be truncated!)"
+              },
+              "multiline": true
+            }
+          },
+          
+          // Drop-down menu      
+          {
+            "type": "input",
+            "block_id": "note02",
+            "label": {
+              "type": "plain_text",
+              "text": "Color",
+            },
+            "element": {
+              "type": "static_select",
+              "action_id": "color",
+              "options": [
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "yellow"
+                  },
+                  "value": "yellow"
+                },
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "blue"
+                  },
+                  "value": "blue"
+                },
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "green"
+                  },
+                  "value": "green"
+                },
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "pink"
+                  },
+                  "value": "pink"
+                }
+              ]
+            }
+          
+          },
+          // {
+          //   "type": "datepicker",
+          //   "action_id": "datepicker123",
+          //   "initial_date": "1990-04-28",
+          //   "placeholder": {
+          //     "type": "plain_text",
+          //     "text": "Select a date"
+          //   }
+          // },
+        ]
+      }
     })
   } 
   catch (error) {
@@ -87,82 +177,7 @@ app.action("create_event", async ({ack, body}) => {
   }
 })
 
-const openModal = async(trigger_id) => {
+// const openModal = async (trigger_id) => {
   
-  const modal = {
-    type: 'modal',
-    title: {
-      type: 'plain_text',
-      text: 'Create a Task'
-    },
-    submit: {
-      type: 'plain_text',
-      text: 'Create'
-    },
-    blocks: [
-      // Text input
-      {
-        "type": "input",
-        "block_id": "note01",
-        "label": {
-          "type": "plain_text",
-          "text": "Note"
-        },
-        "element": {
-          "action_id": "content",
-          "type": "plain_text_input",
-          "placeholder": {
-            "type": "plain_text",
-            "text": "Take a note... \n(Text longer than 3000 characters will be truncated!)"
-          },
-          "multiline": true
-        }
-      },
-      
-      // Drop-down menu      
-      {
-        "type": "input",
-        "block_id": "note02",
-        "label": {
-          "type": "plain_text",
-          "text": "Color",
-        },
-        "element": {
-          "type": "static_select",
-          "action_id": "color",
-          "options": [
-            {
-              "text": {
-                "type": "plain_text",
-                "text": "yellow"
-              },
-              "value": "yellow"
-            },
-            {
-              "text": {
-                "type": "plain_text",
-                "text": "blue"
-              },
-              "value": "blue"
-            },
-            {
-              "text": {
-                "type": "plain_text",
-                "text": "green"
-              },
-              "value": "green"
-            },
-            {
-              "text": {
-                "type": "plain_text",
-                "text": "pink"
-              },
-              "value": "pink"
-            }
-          ]
-        }
-      
-      }
-    ]
-  }
-}
+//   const modal = 
+// }
