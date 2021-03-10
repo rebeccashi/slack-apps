@@ -102,14 +102,14 @@ app.action("create_task", async ({ack, body, client}) => {
             "block_id": "note01",
             "label": {
               "type": "plain_text",
-              "text": "Note"
+              "text": "Task"
             },
             "element": {
               "action_id": "content",
               "type": "plain_text_input",
               "placeholder": {
                 "type": "plain_text",
-                "text": "Take a note... \n(Text longer than 3000 characters will be truncated!)"
+                "text": "Write down your task"
               },
               "multiline": true
             }
@@ -121,53 +121,94 @@ app.action("create_task", async ({ack, body, client}) => {
             "block_id": "note02",
             "label": {
               "type": "plain_text",
-              "text": "Color",
+              "text": "Priority",
             },
             "element": {
               "type": "static_select",
-              "action_id": "color",
+              "action_id": "select_priority",
               "options": [
                 {
                   "text": {
                     "type": "plain_text",
-                    "text": "yellow"
+                    "text": "Urgent"
                   },
-                  "value": "yellow"
+                  "value": "urgent"
                 },
                 {
                   "text": {
                     "type": "plain_text",
-                    "text": "blue"
+                    "text": "High"
                   },
-                  "value": "blue"
+                  "value": "high"
                 },
                 {
                   "text": {
                     "type": "plain_text",
-                    "text": "green"
+                    "text": "Medium"
                   },
-                  "value": "green"
+                  "value": "medium"
                 },
                 {
                   "text": {
                     "type": "plain_text",
-                    "text": "pink"
+                    "text": "Low"
                   },
-                  "value": "pink"
+                  "value": "low"
                 }
               ]
             }
           
           },
-          // {
-          //   "type": "datepicker",
-          //   "action_id": "datepicker123",
-          //   "initial_date": "1990-04-28",
-          //   "placeholder": {
-          //     "type": "plain_text",
-          //     "text": "Select a date"
-          //   }
-          // },
+          {
+            "type": "actions",
+            "elements": [
+              {
+                "type": "datepicker",
+                "initial_date": "1990-04-28",
+                "placeholder": {
+                  "type": "plain_text",
+                  "text": "Select a date",
+                  "emoji": true
+                },
+                "action_id": "actionId-0"
+              },
+              {
+                "type": "datepicker",
+                "initial_date": "1990-04-28",
+                "placeholder": {
+                  "type": "plain_text",
+                  "text": "Select a date",
+                  "emoji": true
+                },
+                "action_id": "actionId-1"
+              }
+            ]
+          },
+          {
+            "type": "actions",
+            "elements": [
+              {
+                "type": "timepicker",
+                "initial_time": "13:37",
+                "placeholder": {
+                  "type": "plain_text",
+                  "text": "Select time",
+                  "emoji": true
+                },
+                "action_id": "select_time"
+              },
+              {
+                "type": "button",
+                "text": {
+                  "type": "plain_text",
+                  "text": "Click Me",
+                  "emoji": true
+                },
+                "value": "click_me_123",
+                "action_id": "select_date"
+              }
+            ]
+          }
         ]
       }
     })
