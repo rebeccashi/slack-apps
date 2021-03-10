@@ -1,6 +1,9 @@
 const { App } = require('@slack/bolt');
 require('dotenv').config();
 
+const { JsonDB} = require('node-json-db');
+const db = new JsonDB('task_db', true, true);
+
 // Initializes your app with your bot token and signing secret
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
