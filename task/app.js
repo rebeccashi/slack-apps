@@ -4,6 +4,19 @@ require('dotenv').config();
 const { JsonDB} = require('node-json-db');
 const db = new JsonDB('task_db', true, true);
 
+const sampleTask = {
+  "U01LFS3BN92": {
+    data:[
+      {
+        "task": "Standup",
+        "priority": "medium",
+        "date": "2021/03/09",
+        "time": "22:28",
+      }
+    ]
+  }
+}
+
 // Initializes your app with your bot token and signing secret
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -91,6 +104,10 @@ app.action("create_task", async ({ack, body, client}) => {
   // },
   const user = body.user;
 
+  const time = new Date(Date.now())
+  console.log(time)
+  console.log(time.getDate())
+  console.log(time.getTime())
 
   try {
     await client.views.open({
@@ -129,7 +146,7 @@ app.action("create_task", async ({ack, body, client}) => {
           // Drop-down menu      
           {
             "type": "input",
-            "block_id": "note02",
+            "block_id": "priority",
             "label": {
               "type": "plain_text",
               "text": "Priority",
@@ -172,6 +189,7 @@ app.action("create_task", async ({ack, body, client}) => {
           },
           {
             "type": "actions",
+            "block_id": "date_pickers",
             "elements": [
               {
                 "type": "datepicker",
@@ -183,20 +201,21 @@ app.action("create_task", async ({ack, body, client}) => {
                 },
                 "action_id": "select_date1"
               },
-              {
-                "type": "datepicker",
-                "initial_date": "1990-04-28",
-                "placeholder": {
-                  "type": "plain_text",
-                  "text": "Select a date",
-                  "emoji": true
-                },
-                "action_id": "select_date2"
-              }
+              // {
+              //   "type": "datepicker",
+              //   "initial_date": "1990-04-28",
+              //   "placeholder": {
+              //     "type": "plain_text",
+              //     "text": "Select a date",
+              //     "emoji": true
+              //   },
+              //   "action_id": "select_date2"
+              // }
             ]
           },
           {
             "type": "actions",
+            "block_id": "time_pickers",
             "elements": [
               {
                 "type": "timepicker",
@@ -253,6 +272,13 @@ app.view('create_task_view', async ({ ack, body, client, view}) => {
   const values = view.state.values;
   const user = body.user;
   const id = user.id;
-  console.log(values)
+  // console.log(values)
+
+  const taskName = values.task_name.content.value;
+  const priority = values.priority.select_priority.selected_option.value;
+  const date = values.date_pickers.select_date1.selected_date;
+  const time = values.time_pickers.select_time1.selected_time;
+
+  console.log(`${id} ${taskName} ${priority} ${date} ${time}`)
 
 })
