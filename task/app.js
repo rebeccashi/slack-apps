@@ -277,8 +277,22 @@ app.view('create_task_view', async ({ ack, body, client, view}) => {
   const taskName = values.task_name.content.value;
   const priority = values.priority.select_priority.selected_option.value;
   const date = values.date_pickers.select_date1.selected_date;
-  const time = values.time_pickers.select_time1.selected_time;
+  const startTime = values.time_pickers.select_time1.selected_time;
+  const endTime = values.time_pickers.select_time2.selected_time;
 
-  console.log(`${id} ${taskName} ${priority} ${date} ${time}`)
+  console.log(`${id} ${taskName} ${priority} ${date} ${startTime} ${endTime}`)
+
+  const newTask = {
+    task: taskName,
+    priority: priority,
+    date: date,
+    time: {
+      startTime: startTime,
+      endTime: endTime
+    }
+  }
+  db.push(`/${id}/data[]`, newTask, true)
+  console.log(currentData)
+  // db.push(`/${id}/data`, newTask, false)
 
 })
