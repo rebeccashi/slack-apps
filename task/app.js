@@ -4,6 +4,8 @@ require('dotenv').config();
 const { JsonDB} = require('node-json-db');
 const db = new JsonDB('task_db', true, true);
 
+const moment = require('moment')
+
 const sampleTask = {
   "U01LFS3BN92": {
     data:[
@@ -104,10 +106,9 @@ app.action("create_task", async ({ack, body, client}) => {
   // },
   const user = body.user;
 
-  const time = new Date(Date.now())
-  console.log(time)
-  console.log(time.getDate())
-  console.log(time.getTime())
+  const m = moment().format()
+  const initialDate = m.slice(0,10)
+  const initialTime = m.slice(11,16)
 
   try {
     await client.views.open({
@@ -193,7 +194,7 @@ app.action("create_task", async ({ack, body, client}) => {
             "elements": [
               {
                 "type": "datepicker",
-                "initial_date": "1990-04-28",
+                "initial_date": initialDate,
                 "placeholder": {
                   "type": "plain_text",
                   "text": "Select a date",
@@ -201,16 +202,6 @@ app.action("create_task", async ({ack, body, client}) => {
                 },
                 "action_id": "select_date1"
               },
-              // {
-              //   "type": "datepicker",
-              //   "initial_date": "1990-04-28",
-              //   "placeholder": {
-              //     "type": "plain_text",
-              //     "text": "Select a date",
-              //     "emoji": true
-              //   },
-              //   "action_id": "select_date2"
-              // }
             ]
           },
           {
@@ -219,7 +210,7 @@ app.action("create_task", async ({ack, body, client}) => {
             "elements": [
               {
                 "type": "timepicker",
-                "initial_time": "13:37",
+                "initial_time": initialTime,
                 "placeholder": {
                   "type": "plain_text",
                   "text": "Select time",
@@ -229,7 +220,7 @@ app.action("create_task", async ({ack, body, client}) => {
               },
               {
                 "type": "timepicker",
-                "initial_time": "13:37",
+                "initial_time": initialTime,
                 "placeholder": {
                   "type": "plain_text",
                   "text": "Select time",
@@ -292,7 +283,5 @@ app.view('create_task_view', async ({ ack, body, client, view}) => {
     }
   }
   db.push(`/${id}/data[]`, newTask, true)
-  console.log(currentData)
-  // db.push(`/${id}/data`, newTask, false)
 
 })
