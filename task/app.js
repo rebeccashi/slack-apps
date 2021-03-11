@@ -34,6 +34,89 @@ const app = new App({
 
 app.event('app_home_opened', async ({ event, client, context }) => {
   try {
+
+    const blocks = [
+      {
+        type: "section",
+        text: {
+          "type": "mrkdwn",
+          "text": "*Welcome to your _Tasks's Home_* :tada:"
+        }
+      },
+      {
+        type: "actions",
+        block_id: "create_block",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Create a New Event"
+            },
+            action_id: "create_task",
+            value: "create_event_button"
+          }
+          
+        ]
+      },
+      {
+        type: "divider"
+      },
+      // {
+      //   type: "section",
+      //   text: {
+      //     type: "mrkdwn",
+      //     text: data[0].task
+      //   },
+      //   accessory: {
+      //     type: "image",
+      //     image_url: `https://cdn.glitch.com/0d5619da-dfb3-451b-9255-5560cd0da50b%2Fstickie_yellow.png`,
+      //     alt_text: "stickie note"
+      //   }
+      // },
+      // // {
+      // //   "type": "context",
+      // //   "elements": [
+      // //     {
+      // //       "type": "mrkdwn",
+      // //       "text": o.timestamp
+      // //     }
+      // //   ]
+      // // },
+      // {
+      //   type: "divider"
+      // },
+      
+    ];
+
+    //get data
+    const user = event.user
+    const rawData = db.getData(`/${user}/data`)
+    
+    let data = rawData.slice().reverse()
+    data = data.slice(0,50)
+    console.log(data)
+
+    const textArr = data.map( obj => obj.priority + "\n" +  obj.task + "\n" + obj.date)
+    // console.log(textArr)
+
+    textArr.map(text => {
+      section = {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: text
+        }
+        //accessory: {
+        //     type: "image",
+        //     image_url: `https://cdn.glitch.com/0d5619da-dfb3-451b-9255-5560cd0da50b%2Fstickie_yellow.png`,
+        //     alt_text: "stickie note"
+        //   }
+      }
+      blocks.push(section)
+    })
+    console.log(blocks)
+
     /* view.publish is the method that your app uses to push a view to the Home tab */
     const result = await client.views.publish({
 
@@ -44,48 +127,8 @@ app.event('app_home_opened', async ({ event, client, context }) => {
       view: {
         type: 'home',
         callback_id: 'home_view',
+        blocks: blocks,
 
-        /* body of the view */
-        blocks: [
-          {
-            type: "section",
-            text: {
-              "type": "mrkdwn",
-              "text": "*Welcome to your _Tasks's Home_* :tada:"
-            }
-          },
-          {
-            type: "divider"
-          },
-          //sample task 
-          {
-            "type": "section",
-            "text": {
-              "type": "mrkdwn",
-              //This button won't do much for now but you can set up a listener for it using the `actions()` method and passing its unique `action_id`. See an example in the `examples` folder within your Bolt app.
-              "text": "Standup at 10am"
-            }
-          },
-          {
-            type: "divider"
-          },
-          {
-            type: "actions",
-            block_id: "create_block",
-            elements: [
-              {
-                type: "button",
-                text: {
-                  type: "plain_text",
-                  text: "Create a New Event"
-                },
-                action_id: "create_task",
-                value: "create_event_button"
-              }
-              
-            ]
-          }
-        ]
       }
     });
   }
