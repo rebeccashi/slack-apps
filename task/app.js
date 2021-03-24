@@ -35,7 +35,6 @@ let id, username;
     })();
 
 app.event('app_home_opened', async ({ event, client, body }) => {
-  console.log(event.view.blocks)
   try {
     // console.log(body.user)
 
@@ -81,7 +80,6 @@ app.event('app_home_opened', async ({ event, client, body }) => {
     
     let data = rawData.slice().reverse()
     data = data.slice(0,50)
-    // console.log(data)
 
     const textArr = data.map( obj => transformText(obj))
     
@@ -357,7 +355,6 @@ app.view('create_task_view', async ({ ack, body, client, view}) => {
   const values = view.state.values;
   const user = body.user;
   const id = user.id;
-  // console.log(values)
 
   const taskName = values.task_name.content.value;
   const priority = values.priority.select_priority.selected_option.value;
@@ -365,7 +362,7 @@ app.view('create_task_view', async ({ ack, body, client, view}) => {
   const startTime = values.time_pickers.select_time1.selected_time;
   const endTime = values.time_pickers.select_time2.selected_time;
 
-  console.log(`${id} ${taskName} ${priority} ${date} ${startTime} ${endTime}`)
+  // console.log(`${id} ${taskName} ${priority} ${date} ${startTime} ${endTime}`)
 
   const newTask = {
     task: taskName,
