@@ -32,8 +32,9 @@ const app = new App({
     console.log('⚡️ Bolt app is running!');
     })();
 
-app.event('app_home_opened', async ({ event, client, context }) => {
+app.event('app_home_opened', async ({ event, client, body }) => {
   try {
+    // console.log(body.user)
 
     const blocks = [
       {
@@ -41,6 +42,12 @@ app.event('app_home_opened', async ({ event, client, context }) => {
         text: {
           "type": "mrkdwn",
           "text": "*Welcome to your _Tasks's Home_* :tada:"
+        },
+        accessory: {
+          type: "image",
+          image_url: "https://user-images.githubusercontent.com/27893685/112247799-4e4bb980-8c2b-11eb-9369-7106d6ed2139.png",
+          // image_url: "https://user-images.githubusercontent.com/27893685/112249159-abe10580-8c2d-11eb-9734-583611185058.png",
+          alt_text: "task illustration"
         }
       },
       {
@@ -59,34 +66,15 @@ app.event('app_home_opened', async ({ event, client, context }) => {
           
         ]
       },
+      // {
+      //   type: "image",
+      //     // image_url: "https://user-images.githubusercontent.com/27893685/112247799-4e4bb980-8c2b-11eb-9369-7106d6ed2139.png",
+      //     image_url: "https://user-images.githubusercontent.com/27893685/112248940-3bd27f80-8c2d-11eb-9100-97d404dd2dc0.png",
+      //     alt_text: "task illustration"
+      // },
       {
         type: "divider"
-      },
-      // {
-      //   type: "section",
-      //   text: {
-      //     type: "mrkdwn",
-      //     text: data[0].task
-      //   },
-      //   accessory: {
-      //     type: "image",
-      //     image_url: `https://cdn.glitch.com/0d5619da-dfb3-451b-9255-5560cd0da50b%2Fstickie_yellow.png`,
-      //     alt_text: "stickie note"
-      //   }
-      // },
-      // // {
-      // //   "type": "context",
-      // //   "elements": [
-      // //     {
-      // //       "type": "mrkdwn",
-      // //       "text": o.timestamp
-      // //     }
-      // //   ]
-      // // },
-      // {
-      //   type: "divider"
-      // },
-      
+      },  
     ];
 
     //get data
@@ -95,18 +83,51 @@ app.event('app_home_opened', async ({ event, client, context }) => {
     
     let data = rawData.slice().reverse()
     data = data.slice(0,50)
-    console.log(data)
+    // console.log(data)
 
-    const textArr = data.map( obj => obj.priority + "\n" +  obj.task + "\n" + obj.date)
-    // console.log(textArr)
+    const textArr = data.map( obj => {
+      text = `*${obj.task}*\n`
+      emoji = ""
+      if (obj.priority == 'Urgent') {
+        emoji = ":large_red_square:"
+      } else if (obj.priority == 'High') {
+        emoji = ":large_orange_square:"
+      } else if (obj.priority == 'Medium') {
+        emoji = ":large_yellow_square:"
+      } else if (obj.priority == 'Low') {
+        emoji = ":large_green_square:"
+      }
+      text += `*Priority:* ${obj.priority} ${emoji}\n *Date*: ${obj.date}\n`
+      return text
+    })
+    
+    if (textArr.length > 0) {
+      blocks.push(
+        {
+          type: "header",
+          text: {
+            type: "plain_text",
+            text: 'Events :calendar:'
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "\n"
+          }
+        }
+      )
+    }
 
-    textArr.map(text => {
+    textArr.map((text, id) => {
       section = {
         type: "section",
         text: {
           type: "mrkdwn",
           text: text
-        }
+        },
+        
         //accessory: {
         //     type: "image",
         //     image_url: `https://cdn.glitch.com/0d5619da-dfb3-451b-9255-5560cd0da50b%2Fstickie_yellow.png`,
@@ -114,8 +135,21 @@ app.event('app_home_opened', async ({ event, client, context }) => {
         //   }
       }
       blocks.push(section)
+      blocks.push({
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: '\n'
+        },
+      })
+      if (id < textArr.length -1 ) {
+        blocks.push({
+            type: "divider"
+          },
+        )
+      }
     })
-    console.log(blocks)
+    // console.log(blocks)
 
     /* view.publish is the method that your app uses to push a view to the Home tab */
     const result = await client.views.publish({
@@ -204,28 +238,28 @@ app.action("create_task", async ({ack, body, client}) => {
                     "type": "plain_text",
                     "text": "Urgent"
                   },
-                  "value": "urgent"
+                  "value": "Urgent"
                 },
                 {
                   "text": {
                     "type": "plain_text",
                     "text": "High"
                   },
-                  "value": "high"
+                  "value": "High"
                 },
                 {
                   "text": {
                     "type": "plain_text",
                     "text": "Medium"
                   },
-                  "value": "medium"
+                  "value": "Medium"
                 },
                 {
                   "text": {
                     "type": "plain_text",
                     "text": "Low"
                   },
-                  "value": "low"
+                  "value": "Low"
                 }
               ]
             }

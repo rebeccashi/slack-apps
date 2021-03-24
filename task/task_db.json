@@ -3,11 +3,29 @@
         "data": [
             {
                 "task": "Test1",
-                "priority": "high",
+                "priority": "High",
                 "date": "1990-04-28",
                 "time": {
                     "startTime": "13:37",
                     "endTime": "13:37"
+                }
+            },
+            {
+                "task": "Go to the gym",
+                "priority": "Medium",
+                "date": "2021-03-23",
+                "time": {
+                    "startTime": "22:02",
+                    "endTime": "23:00"
+                }
+            },
+            {
+                "task": "Go for a walk",
+                "priority": "Low",
+                "date": "2021-03-25",
+                "time": {
+                    "startTime": "17:00",
+                    "endTime": "18:00"
                 }
             }
         ]
