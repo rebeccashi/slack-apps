@@ -25,6 +25,8 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET
 });
 
+let id, username;
+
 (async () => {
     // Start your app
     await app.start(process.env.PORT || 3000);
@@ -33,6 +35,7 @@ const app = new App({
     })();
 
 app.event('app_home_opened', async ({ event, client, body }) => {
+  console.log(event.view.blocks)
   try {
     // console.log(body.user)
 
@@ -66,12 +69,6 @@ app.event('app_home_opened', async ({ event, client, body }) => {
           
         ]
       },
-      // {
-      //   type: "image",
-      //     // image_url: "https://user-images.githubusercontent.com/27893685/112247799-4e4bb980-8c2b-11eb-9369-7106d6ed2139.png",
-      //     image_url: "https://user-images.githubusercontent.com/27893685/112248940-3bd27f80-8c2d-11eb-9100-97d404dd2dc0.png",
-      //     alt_text: "task illustration"
-      // },
       {
         type: "divider"
       },  
@@ -79,50 +76,14 @@ app.event('app_home_opened', async ({ event, client, body }) => {
 
     //get data
     const user = event.user
+    id = user;
     const rawData = db.getData(`/${user}/data`)
     
     let data = rawData.slice().reverse()
     data = data.slice(0,50)
     // console.log(data)
 
-    const textArr = data.map( obj => {
-      text = `*${obj.task}*\n`
-      
-      emoji = ""
-      startTime = obj.time.startTime
-      hour = startTime.slice(0,2)
-      if (hour < 12) {
-        startTime += "am"
-      } else {
-        hour = hour== 12 ? hour : hour-12 
-        startTime = hour + startTime.slice(2,5)
-        startTime += "pm"
-      }
-      startTime = startTime.length == 7 ? startTime : startTime + "  "
-
-      endTime = obj.time.endTime
-      hour = endTime.slice(0,2)
-      if (hour < 12) {
-        endTime += "am"
-      } else {
-        hour = hour== 12 ? hour : hour-12 
-        endTime = hour + endTime.slice(2,5)
-        endTime += "pm"
-      }
-
-      if (obj.priority == 'Urgent') {
-        emoji = ":large_red_square:"
-      } else if (obj.priority == 'High') {
-        emoji = ":large_orange_square:"
-      } else if (obj.priority == 'Medium') {
-        emoji = ":large_yellow_square:"
-      } else if (obj.priority == 'Low') {
-        emoji = ":large_green_square:"
-      }
-      text += `*Priority:* ${obj.priority} ${emoji}\n *Date*: ${obj.date}\n`
-      text += `*Start Time*: ${startTime} \t\t\t\t\t\t *End Time*: ${endTime}`
-      return text
-    })
+    const textArr = data.map( obj => transformText(obj))
     
     if (textArr.length > 0) {
       blocks.push(
@@ -150,12 +111,6 @@ app.event('app_home_opened', async ({ event, client, body }) => {
           type: "mrkdwn",
           text: text
         },
-        
-        //accessory: {
-        //     type: "image",
-        //     image_url: `https://cdn.glitch.com/0d5619da-dfb3-451b-9255-5560cd0da50b%2Fstickie_yellow.png`,
-        //     alt_text: "stickie note"
-        //   }
       }
       blocks.push(section)
       blocks.push({
@@ -193,6 +148,45 @@ app.event('app_home_opened', async ({ event, client, body }) => {
     console.error(error);
   }
 });
+
+const transformText = (obj) => {
+  text = `*${obj.task}*\n`
+      
+  emoji = ""
+  startTime = obj.time.startTime
+  hour = startTime.slice(0,2)
+  if (hour < 12) {
+    startTime += "am"
+  } else {
+    hour = hour== 12 ? hour : hour-12 
+    startTime = hour + startTime.slice(2,5)
+    startTime += "pm"
+  }
+  startTime = startTime.length == 7 ? startTime : startTime + "  "
+
+  endTime = obj.time.endTime
+  hour = endTime.slice(0,2)
+  if (hour < 12) {
+    endTime += "am"
+  } else {
+    hour = hour== 12 ? hour : hour-12 
+    endTime = hour + endTime.slice(2,5)
+    endTime += "pm"
+  }
+
+  if (obj.priority == 'Urgent') {
+    emoji = ":large_red_square:"
+  } else if (obj.priority == 'High') {
+    emoji = ":large_orange_square:"
+  } else if (obj.priority == 'Medium') {
+    emoji = ":large_yellow_square:"
+  } else if (obj.priority == 'Low') {
+    emoji = ":large_green_square:"
+  }
+  text += `*Priority:* ${obj.priority} ${emoji}\n *Date*: ${obj.date}\n`
+  text += `*Start Time*: ${startTime} \t\t\t\t\t\t *End Time*: ${endTime}`
+  return text
+}
 
 // clicking the button is not triggering this function
 app.action("create_task", async ({ack, body, client}) => {
@@ -383,5 +377,9 @@ app.view('create_task_view', async ({ ack, body, client, view}) => {
     }
   }
   db.push(`/${id}/data[]`, newTask, true)
+
+  //build new view
+  const text = transformText(newTask)
+  
 
 })
