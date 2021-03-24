@@ -87,7 +87,29 @@ app.event('app_home_opened', async ({ event, client, body }) => {
 
     const textArr = data.map( obj => {
       text = `*${obj.task}*\n`
+      
       emoji = ""
+      startTime = obj.time.startTime
+      hour = startTime.slice(0,2)
+      if (hour < 12) {
+        startTime += "am"
+      } else {
+        hour = hour== 12 ? hour : hour-12 
+        startTime = hour + startTime.slice(2,5)
+        startTime += "pm"
+      }
+      startTime = startTime.length == 7 ? startTime : startTime + "  "
+
+      endTime = obj.time.endTime
+      hour = endTime.slice(0,2)
+      if (hour < 12) {
+        endTime += "am"
+      } else {
+        hour = hour== 12 ? hour : hour-12 
+        endTime = hour + endTime.slice(2,5)
+        endTime += "pm"
+      }
+
       if (obj.priority == 'Urgent') {
         emoji = ":large_red_square:"
       } else if (obj.priority == 'High') {
@@ -98,6 +120,7 @@ app.event('app_home_opened', async ({ event, client, body }) => {
         emoji = ":large_green_square:"
       }
       text += `*Priority:* ${obj.priority} ${emoji}\n *Date*: ${obj.date}\n`
+      text += `*Start Time*: ${startTime} \t\t\t\t\t\t *End Time*: ${endTime}`
       return text
     })
     

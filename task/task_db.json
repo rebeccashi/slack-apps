@@ -27,6 +27,15 @@
                     "startTime": "17:00",
                     "endTime": "18:00"
                 }
+            },
+            {
+                "task": "Prepare for Presentation",
+                "priority": "Urgent",
+                "date": "2021-03-25",
+                "time": {
+                    "startTime": "10:00",
+                    "endTime": "11:00"
+                }
             }
         ]
     }
